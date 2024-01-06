@@ -108,7 +108,6 @@ WHERE
     routes.source = 'CityA'
     AND routes.destination = 'CityB'
     AND bus_schedule.active = TRUE
-   -- AND bus_schedule.day_of_week = TO_CHAR(YourGivenDate::date, 'Day')
    AND bus_schedule.day_of_week = 'Monday';
 
 
