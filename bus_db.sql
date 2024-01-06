@@ -28,7 +28,7 @@ CREATE TABLE Routes (
     source VARCHAR(20) not null,
     destination VARCHAR(20) not null,
     distance FLOAT not null,
-    eta TIME not null
+    departure_time  TIME not null
 );
 
 -- Bus_Routes Table
