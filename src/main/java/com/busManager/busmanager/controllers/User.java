@@ -1,17 +1,23 @@
 package com.busManager.busmanager.controllers;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.busManager.busmanager.data.request.SearchRequest;
+import com.busManager.busmanager.data.response.SearchResponse;
+import com.busManager.busmanager.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
 public class User {
+    @Autowired
+    private UserService userService;
 
-    @GetMapping("/seach")
-    public String search(){
-        return null;
+    @GetMapping("/search")
+    public ResponseEntity<SearchResponse> search(@RequestBody SearchRequest searchRequest) {
+        return new ResponseEntity<>(userService.search(searchRequest), HttpStatus.OK);
+
     }
 
     @GetMapping("/check-eligibility")

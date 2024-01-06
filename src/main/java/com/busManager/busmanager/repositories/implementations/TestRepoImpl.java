@@ -14,18 +14,19 @@ import java.sql.Statement;
 @Repository
 public class TestRepoImpl implements TestRepo {
 
-    private static  String SQL_CREATE="INSERT INTO BUS(ID) VALUES (?)";
+    private static final String SQL_CREATE = "INSERT INTO BUS(ID) VALUES (?)";
 
     @Autowired
     JdbcTemplate jdbcTemplate;
+
     @Override
     public String create(String id) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection ->{
-            PreparedStatement ps= connection.prepareStatement(SQL_CREATE, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1,id);
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(SQL_CREATE, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, id);
             return ps;
-        },keyHolder);
-        return String.valueOf( keyHolder.getKeys().get("ID"));
+        }, keyHolder);
+        return String.valueOf(keyHolder.getKeys().get("ID"));
     }
 }
