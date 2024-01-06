@@ -8,8 +8,6 @@ import java.util.Date;
 @Getter
 @Setter
 public class CheckEligibilityRequest {
-    private String busId;
-    private String source;
-    private String destination;
-    private Date departureTime;
+    private Integer busRouteId;
+    private Date departureDate;
 }
