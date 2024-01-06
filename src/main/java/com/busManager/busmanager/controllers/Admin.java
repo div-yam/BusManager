@@ -12,6 +12,7 @@ public class Admin {
     AdminService adminService;
     @PostMapping("/add")
     public String add(){
+        adminService.add();
         return null;
     }
 

@@ -1,37 +1,28 @@
 package com.busManager.busmanager.controllers;
 
-<<<<<<< Updated upstream
+import com.busManager.busmanager.data.request.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-=======
-import com.busManager.busmanager.data.request.*;
 import com.busManager.busmanager.data.response.*;
 import com.busManager.busmanager.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
->>>>>>> Stashed changes
+import com.busManager.busmanager.data.response.SearchResponse;
 
 @RestController
 @RequestMapping("/user")
 public class User {
-<<<<<<< Updated upstream
 
-    @GetMapping("/seach")
-    public String search(){
-        return null;
-=======
     @Autowired
     private UserService userService;
 
     @GetMapping("/search")
     public ResponseEntity<SearchResponse> search(@RequestBody SearchRequest searchRequest) {
         return new ResponseEntity<>(userService.search(searchRequest), HttpStatus.OK);
->>>>>>> Stashed changes
     }
 
     @GetMapping("/check-eligibility")

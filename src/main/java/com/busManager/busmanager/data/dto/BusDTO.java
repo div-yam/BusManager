@@ -1,4 +1,4 @@
-package com.busManager.busmanager.data;
+package com.busManager.busmanager.data.dto;
 
 import lombok.Getter;
 import lombok.Setter;

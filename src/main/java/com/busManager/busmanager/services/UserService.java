@@ -9,4 +9,5 @@ public interface UserService {
     public HoldResponse hold(HoldRequest holdRequest);
     public BookResponse book(BookRequest bookRequest);
     public CancelResponse cancel(CancelRequest cancelRequest);
+
 }
