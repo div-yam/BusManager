@@ -10,7 +10,6 @@ import java.util.Date;
 public class BusResponse {
     String busId;
     Integer distance;
-
     Integer ETA;
     Date departureTime;
 }
