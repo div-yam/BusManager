@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SeatAvailabilityDTO {
+public class SeatAvailability {
     private Integer busRouteId;
     private Integer availableSeats;
 }

@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class BusDTO {
+public class Bus {
     private Integer busId;
     private String busName;
     private Integer totalSeats;

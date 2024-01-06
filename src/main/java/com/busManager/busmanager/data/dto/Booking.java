@@ -6,7 +6,7 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class BookingDTO {
+public class Booking {
     private Integer bookingId;
     private Integer userId;
     private Integer busRouteId;

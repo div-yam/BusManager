@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class BusRouteDTO {
+public class BusRoute {
     private Integer busRouteId;
     private Integer busId;
     private Integer routeId;

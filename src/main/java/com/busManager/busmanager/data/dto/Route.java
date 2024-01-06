@@ -7,7 +7,7 @@ import java.sql.Time;
 
 @Getter
 @Setter
-public class RouteDTO {
+public class Route {
     private Integer routeId;
     private String source;
     private String destination;
