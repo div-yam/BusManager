@@ -53,7 +53,7 @@ DO $$
 DECLARE
     current_date DATE := CURRENT_DATE;
     is_operational BOOLEAN;
-    dayOfWeek INT := YourDayOfWeekValue; -- Replace with your desired day of the week (1 for Monday, etc.)
+    --dayOfWeek INT := YourDayOfWeekValue; -- Replace with your desired day of the week (1 for Monday, etc.)
 BEGIN
     FOR i IN 0..29 LOOP
         is_operational := EXTRACT(DOW FROM current_date + i) = dayOfWeek;
@@ -64,6 +64,23 @@ BEGIN
         END IF;
     END LOOP;
 END $$;
+---for jdbc
+CREATE OR REPLACE FUNCTION update_seat_availability(dayOfWeek INT, busRouteId INT, seatsAvailable INT, totalSeats INT)
+RETURNS VOID AS $$
+DECLARE
+    current_date DATE := CURRENT_DATE;
+    is_operational BOOLEAN;
+BEGIN
+    FOR i IN 0..29 LOOP
+        is_operational := EXTRACT(DOW FROM current_date + i) = dayOfWeek;
+
+        IF is_operational THEN
+            INSERT INTO seat_availability (bus_route_id, date, seats_available, total_seats)
+            VALUES (busRouteId, current_date + i, seatsAvailable, totalSeats);
+        END IF;
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql;
 
 
 INSERT INTO bus_schedule (bus_route_id, day_of_week, active) VALUES (1, 'Monday', TRUE);

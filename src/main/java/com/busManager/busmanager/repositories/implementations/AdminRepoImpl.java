@@ -3,12 +3,15 @@ package com.busManager.busmanager.repositories.implementations;
 import com.busManager.busmanager.data.request.AddBusRequest;
 import com.busManager.busmanager.repositories.AdminRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Objects;
 
@@ -18,21 +21,7 @@ public class AdminRepoImpl implements AdminRepo {
     private static final String ADD_BUS_SQL ="INSERT INTO buses (bus_name, total_seats) VALUES (?, ?);";
     private static final String ADD_ROUTE_SQL="INSERT INTO routes (source, destination, distance, departure_time) VALUES (?, ?, ?, ?);";
     private static final String ADD_BUS_ROUTE_SQL="INSERT INTO bus_routes (bus_id, route_id) VALUES (?, ?);";
-    private static final String ADD_SEAT_AVAILABILITY = "DO $$\n" +
-            "DECLARE\n" +
-            "    current_date DATE := CURRENT_DATE;\n" +
-            "    is_operational BOOLEAN;\n" +
-            "    dayOfWeek INT := ?;\n" +
-            "BEGIN\n" +
-            "    FOR i IN 0..29 LOOP\n" +
-            "        is_operational := EXTRACT(DOW FROM current_date + i) = dayOfWeek;\n" +
-            "\n" +
-            "        IF is_operational THEN\n" +
-            "            INSERT INTO seat_availability (bus_route_id, date, seats_available, total_seats)\n" +
-            "            VALUES (?, current_date + i, ?, ?);\n" +
-            "        END IF;\n" +
-            "    END LOOP;\n" +
-            "END $$;";
+    private static final String ADD_SEAT_AVAILABILITY = "SELECT update_seat_availability(?, ?, ?, ?)";
     private static final String ADD_BUS_SCHEDULE_SQL = "INSERT INTO bus_schedule (bus_route_id, day_of_week, active) VALUES (?, ?, TRUE);";
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -76,18 +65,19 @@ public class AdminRepoImpl implements AdminRepo {
     }
 
     @Override
-    public boolean addSeatAvailability(Integer weekDay,
+    public void addSeatAvailability(Integer weekDay,
                                        Integer busRouteId, Integer totalNumberOfSeats) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(ADD_SEAT_AVAILABILITY, Statement.RETURN_GENERATED_KEYS);
-            ps.setInt(1, weekDay);
-            ps.setInt(2, busRouteId);
-            ps.setInt(3, totalNumberOfSeats);
-            ps.setInt(4, totalNumberOfSeats);
-            return ps;
-        }, keyHolder);
-        return Objects.isNull(keyHolder.getKeys().get("AVAILABILITY_ID"));
+        jdbcTemplate.execute(ADD_SEAT_AVAILABILITY, new PreparedStatementCallback<Void>() {
+            @Override
+            public Void doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
+                ps.setInt(1, weekDay);
+                ps.setInt(2, busRouteId);
+                ps.setInt(3, totalNumberOfSeats);
+                ps.setInt(4, totalNumberOfSeats);
+                ps.execute();
+                return null;
+            }
+        });
     }
 
     @Override

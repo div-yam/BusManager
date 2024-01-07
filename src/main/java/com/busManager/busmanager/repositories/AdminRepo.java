@@ -8,6 +8,6 @@ public interface AdminRepo {
     public Integer addRoute(AddBusRequest addBusRequest);
 
     public Integer addBusRoute(Integer busId, Integer routeId);
-    public boolean addSeatAvailability(Integer weekDay, Integer busRouteId, Integer totalNumberOfSeats);
+    public void addSeatAvailability(Integer weekDay, Integer busRouteId, Integer totalNumberOfSeats);
     public Integer addBusSchedule(Integer busRoutedId, String weekDay);
 }

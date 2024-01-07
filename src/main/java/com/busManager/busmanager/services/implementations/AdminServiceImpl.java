@@ -27,12 +27,12 @@ public class AdminServiceImpl implements AdminService {
         Integer busRouteId=adminRepo.addBusRoute(busId,routeId);
 
         //Handle Seat Availability
-//        List<WeekDays> weekDaysList = addBusRequest.getWeekDays();
-//        Integer[] weekDaysArray = new Integer[weekDaysList.size()];
-//        for (WeekDays weekDay : weekDaysList) {
-//            boolean seatAvailabilityId = adminRepo.addSeatAvailability(weekDay.index,
-//                    busRouteId, addBusRequest.getTotalSeats());
-//        }
+        List<WeekDays> weekDaysList = addBusRequest.getWeekDays();
+        Integer[] weekDaysArray = new Integer[weekDaysList.size()];
+        for (WeekDays weekDay : weekDaysList) {
+           adminRepo.addSeatAvailability(weekDay.index,
+                    busRouteId, addBusRequest.getTotalSeats());
+        }
 
         // Handle bus schedule
         for (WeekDays weekDay :addBusRequest.getWeekDays()) {
