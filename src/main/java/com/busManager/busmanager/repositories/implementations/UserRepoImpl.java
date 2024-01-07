@@ -92,6 +92,7 @@ public class UserRepoImpl implements UserRepo {
                     busSearchResponse.setDistance(rs.getInt("distance"));
                     busSearchResponse.setDepartureTime(rs.getTime("departure_time"));
                     busSearchResponse.setBusRouteId(rs.getInt("bus_route_id"));
+                    busSearchResponse.setETA(calculateETA(rs.getInt("distance"), rs.getTime("departure_time")));
                     return busSearchResponse;
                 }});
         } catch (Exception e) {
@@ -216,6 +217,23 @@ public class UserRepoImpl implements UserRepo {
         return new BusSearchResponse(rs.getString("BUS_NAME")
                 , rs.getInt("DISTANCE")
                 , rs.getTime("DEPARTURE_TIME")
-                , rs.getInt("BUS_ROUTE_ID"));
+                , rs.getInt("BUS_ROUTE_ID")
+                , calculateETA(rs.getInt("DISTANCE"), rs.getTime("DEPARTURE_TIME")));
     });
+
+    public Time calculateETA(Integer distance, Time departureTime) {
+        if (distance != null && departureTime != null) {
+            // Assuming the speed is 60 km/h
+            int speedKmPerHour = 60;
+
+            // Calculate ETA in milliseconds
+            long etaMillis = departureTime.getTime() + (distance * 3600L * 1000) / speedKmPerHour;
+
+            // Create a new Time object for ETA
+            Time ETA = new Time(etaMillis);
+
+            return ETA;
+        }
+        return null; // Handle missing data gracefully
+    }
 }
