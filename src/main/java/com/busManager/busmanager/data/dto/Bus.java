@@ -11,5 +11,4 @@ public class Bus {
     private Integer busId;
     private String busName;
     private Integer totalSeats;
-    private List<String> daysOfOperation;
 }
