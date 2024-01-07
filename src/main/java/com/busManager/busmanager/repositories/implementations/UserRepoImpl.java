@@ -1,6 +1,7 @@
 package com.busManager.busmanager.repositories.implementations;
 
 import com.busManager.busmanager.data.dto.BusSearchResponse;
+import com.busManager.busmanager.data.response.CheckEligibilityResponse;
 import com.busManager.busmanager.repositories.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,6 +33,19 @@ public class UserRepoImpl implements UserRepo {
             "    AND routes.destination = ?\n" +
             "    AND bus_schedule.active = TRUE\n" +
             "   AND bus_schedule.day_of_week = ?;";
+
+    private static final String GET_ELIGIBILITY_RESPONSE = "SELECT\n" +
+            "    sa.total_seats - COUNT(b.booking_id) AS seats_available,\n" +
+            "    sa.total_seats\n" +
+            "FROM\n" +
+            "    seat_availability sa\n" +
+            "LEFT JOIN\n" +
+            "    bookings b ON sa.bus_route_id = b.bus_route_id AND sa.date = b.date_of_travel\n" +
+            "WHERE\n" +
+            "    sa.bus_route_id = ?\n" +
+            "    AND sa.date = ?\n" +
+            "GROUP BY\n" +
+            "    sa.total_seats, sa.bus_route_id;";
     @Autowired
     JdbcTemplate jdbcTemplate;
 
@@ -49,6 +63,20 @@ public class UserRepoImpl implements UserRepo {
             }});
 
     }
+
+    @Override
+    public CheckEligibilityResponse getEligibilityResponse(Integer busRouteId, String date) {
+        return jdbcTemplate.queryForObject(GET_ELIGIBILITY_RESPONSE, new Object[]{busRouteId, date}, new RowMapper<CheckEligibilityResponse>() {
+            @Override
+            public CheckEligibilityResponse mapRow(ResultSet rs, int rowNum) throws SQLException {
+                CheckEligibilityResponse checkEligibilityResponse = new CheckEligibilityResponse();
+                checkEligibilityResponse.setNumberOfSeats(rs.getInt("seats_available"));
+                checkEligibilityResponse.setTotalNumberOfSeats(rs.getInt("total_seats"));
+                return checkEligibilityResponse;
+            }
+        });
+    }
+
 
     private final RowMapper<BusSearchResponse> busSearchResponseRowMapper = ((rs, rowNum) -> {
         return new BusSearchResponse(rs.getString("BUS_NAME")

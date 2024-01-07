@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -38,7 +39,16 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public CheckEligibilityResponse checkEligibility(CheckEligibilityRequest checkEligibilityRequest) {
-        return null;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(checkEligibilityRequest.getDepartureDate());
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH) + 1;
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        String date = year+"-"+month+"-"+day;
+        CheckEligibilityResponse checkEligibilityResponse =
+                userRepo.getEligibilityResponse(checkEligibilityRequest.getBusRouteId(), date);
+
+        return checkEligibilityResponse;
     }
     @Override
     public HoldResponse hold(HoldRequest holdRequest) {

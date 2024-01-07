@@ -105,15 +105,16 @@ JOIN
 JOIN
     bus_schedule ON bus_routes.bus_route_id = bus_schedule.bus_route_id
 WHERE
-    routes.source = 'CityA'
-    AND routes.destination = 'CityB'
+    routes.source = 'CityB'
+    AND routes.destination = 'CityC'
     AND bus_schedule.active = TRUE
    AND bus_schedule.day_of_week = 'Monday';
 
 
 ---check eligibility
 SELECT
-    sa.total_seats - COUNT(b.booking_id) AS seats_available
+    sa.total_seats - COUNT(b.booking_id) AS seats_available,
+    sa.total_seats
 FROM
     seat_availability sa
 LEFT JOIN
