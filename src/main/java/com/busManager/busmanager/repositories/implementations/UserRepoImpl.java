@@ -41,18 +41,20 @@ public class UserRepoImpl implements UserRepo {
 
     //Todo: Add constant to check status of booking
 
-    private static final String GET_ELIGIBILITY_RESPONSE = "SELECT\n" +
-            "    sa.total_seats - COUNT(b.booking_id) AS seats_available,\n" +
-            "    sa.total_seats\n" +
-            "FROM\n" +
-            "    seat_availability sa\n" +
-            "LEFT JOIN\n" +
-            "    bookings b ON sa.bus_route_id = b.bus_route_id AND sa.date = b.date_of_travel\n" +
-            "WHERE\n" +
-            "    sa.bus_route_id = ?\n" +
-            "    AND sa.date = ? AND (b.status = 'BOOK' OR (b.status = 'HOLD' AND b.time_of_booking >= NOW() - INTERVAL '5 minutes' ))\n" +
-            "GROUP BY\n" +
-            "    sa.total_seats, sa.bus_route_id;";
+//    private static final String GET_ELIGIBILITY_RESPONSE = "SELECT\n" +
+//            "    sa.total_seats - COUNT(b.booking_id) AS seats_available,\n" +
+//            "    sa.total_seats\n" +
+//            "FROM\n" +
+//            "    seat_availability sa\n" +
+//            "LEFT JOIN\n" +
+//            "    bookings b ON sa.bus_route_id = b.bus_route_id AND sa.date = b.date_of_travel\n" +
+//            "WHERE\n" +
+//            "    sa.bus_route_id = ?\n" +
+//            "    AND sa.date = ? AND (b.status = 'BOOK' OR (b.status = 'HOLD' AND b.time_of_booking >= NOW() - INTERVAL '5 minutes' ))\n" +
+//            "GROUP BY\n" +
+//            "    sa.total_seats, sa.bus_route_id;";
+
+    private static final String GET_ELIGIBILITY_RESPONSE = "select seats_available , total_seats from seat_availability where bus_route_id=? and date = ?;";
 
     private static final String HOLD_BOOKING="INSERT INTO bookings (user_id, bus_route_id, date_of_travel, seat_number, status)\n" +
             "VALUES (?, ?, ?, ?, 'HOLD');";

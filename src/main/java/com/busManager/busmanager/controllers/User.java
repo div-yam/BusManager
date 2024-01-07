@@ -1,6 +1,7 @@
 package com.busManager.busmanager.controllers;
 
 import com.busManager.busmanager.data.request.*;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import com.busManager.busmanager.data.response.SearchResponse;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class User {
 
     @Autowired
@@ -27,22 +28,28 @@ public class User {
 
     @GetMapping("/check-eligibility")
     public ResponseEntity<CheckEligibilityResponse> checkEligibility(
-            @RequestBody CheckEligibilityRequest checkEligibilityRequest){
+            @RequestBody CheckEligibilityRequest checkEligibilityRequest) {
         return new ResponseEntity<>(userService.checkEligibility(checkEligibilityRequest), HttpStatus.OK);
     }
 
     @PutMapping("/hold")
-    public ResponseEntity<HoldResponse> hold(@RequestBody HoldRequest holdRequest){
+    public ResponseEntity<HoldResponse> hold(@RequestBody HoldRequest holdRequest, HttpServletRequest httpServletRequest) {
+        Integer userId = Integer.valueOf(String.valueOf(httpServletRequest.getAttribute("userId")));
+        holdRequest.setUserId(userId);
         return new ResponseEntity<>(userService.hold(holdRequest), HttpStatus.OK);
     }
 
     @PutMapping("/book")
-    public ResponseEntity<BookResponse> book(@RequestBody BookRequest bookRequest){
+    public ResponseEntity<BookResponse> book(@RequestBody BookRequest bookRequest, HttpServletRequest httpServletRequest) {
+        Integer userId = Integer.valueOf(String.valueOf(httpServletRequest.getAttribute("userId")));
+        bookRequest.setUserId(userId);
         return new ResponseEntity<>(userService.book(bookRequest), HttpStatus.OK);
     }
 
     @PutMapping("/cancel")
-    public ResponseEntity<CancelResponse> cancel(@RequestBody CancelRequest cancelRequest){
+    public ResponseEntity<CancelResponse> cancel(@RequestBody CancelRequest cancelRequest, HttpServletRequest httpServletRequest) {
+        Integer userId = Integer.valueOf(String.valueOf(httpServletRequest.getAttribute("userId")));
+        cancelRequest.setUserId(userId);
         return new ResponseEntity<>(userService.cancel(cancelRequest), HttpStatus.OK);
     }
 }

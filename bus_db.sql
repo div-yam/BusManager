@@ -11,7 +11,7 @@ CREATE TABLE Users (
     user_id SERIAL PRIMARY KEY,
     name VARCHAR(80) not null,
     email VARCHAR(80) UNIQUE,
-    password VARCHAR(30) not null,
+    password VARCHAR(200) not null,
     role VARCHAR(10) not null
 );
 
@@ -82,4 +82,7 @@ BEGIN
     END LOOP;
 END;
 $$ LANGUAGE plpgsql;
+
+----Add Admin
+Insert into users(name,email,password,role) values('Divyam','divyam@gmail.com','divyam','ADMIN');
 

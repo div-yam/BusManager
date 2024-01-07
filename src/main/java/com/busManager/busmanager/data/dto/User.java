@@ -1,5 +1,6 @@
 package com.busManager.busmanager.data.dto;
 
+import com.busManager.busmanager.data.UserRole;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,5 +11,5 @@ public class User {
     private String name;
     private String email;
     private String password;
-    private String role;
+    private UserRole role;
 }

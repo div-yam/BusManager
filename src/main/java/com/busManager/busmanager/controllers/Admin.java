@@ -1,22 +1,31 @@
 package com.busManager.busmanager.controllers;
 
+import com.busManager.busmanager.data.UserRole;
 import com.busManager.busmanager.data.request.AddBusRequest;
 import com.busManager.busmanager.data.request.DeleteBusRequest;
 import com.busManager.busmanager.data.request.UpdateBusRequest;
 import com.busManager.busmanager.services.AdminService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
 public class Admin {
 
     @Autowired
     AdminService adminService;
     @PostMapping("/add")
-    public String add(@RequestBody AddBusRequest addBusRequest){
+    public ResponseEntity<String> add(@RequestBody AddBusRequest addBusRequest, HttpServletRequest httpServletRequest){
+        UserRole userRole = UserRole.valueOf(String.valueOf(httpServletRequest.getAttribute("role")));
+        if(!userRole.equals(UserRole.ADMIN)){
+            return new ResponseEntity<>("forbidden",HttpStatus.FORBIDDEN);
+        }
+
         adminService.add(addBusRequest);
-        return null;
+        return ResponseEntity.ok("ok");
     }
 
     @PutMapping("/update")
@@ -26,7 +35,11 @@ public class Admin {
     }
 
     @DeleteMapping("/delete")
-    public String delete(@RequestBody DeleteBusRequest deleteBusRequest){
+    public ResponseEntity<String> delete(@RequestBody DeleteBusRequest deleteBusRequest, HttpServletRequest httpServletRequest){
+        UserRole userRole = UserRole.valueOf(String.valueOf(httpServletRequest.getAttribute("role")));
+        if(!userRole.equals(UserRole.ADMIN)){
+            return new ResponseEntity<>("forbidden",HttpStatus.FORBIDDEN);
+        }
         adminService.delete(deleteBusRequest);
         return null;
     }
