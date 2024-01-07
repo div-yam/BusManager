@@ -4,12 +4,15 @@ import com.busManager.busmanager.data.UserRole;
 import com.busManager.busmanager.data.request.AddBusRequest;
 import com.busManager.busmanager.data.request.DeleteBusRequest;
 import com.busManager.busmanager.data.request.UpdateBusRequest;
+import com.busManager.busmanager.exceptions.AddBusException;
 import com.busManager.busmanager.services.AdminService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Collections;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -19,13 +22,18 @@ public class Admin {
     AdminService adminService;
     @PostMapping("/add")
     public ResponseEntity<String> add(@RequestBody AddBusRequest addBusRequest, HttpServletRequest httpServletRequest){
-        UserRole userRole = UserRole.valueOf(String.valueOf(httpServletRequest.getAttribute("role")));
-        if(!userRole.equals(UserRole.ADMIN)){
-            return new ResponseEntity<>("forbidden",HttpStatus.FORBIDDEN);
+        try {
+            UserRole userRole = UserRole.valueOf(String.valueOf(httpServletRequest.getAttribute("role")));
+            if(!userRole.equals(UserRole.ADMIN)){
+                return new ResponseEntity<>("forbidden",HttpStatus.FORBIDDEN);
+            }
+            adminService.add(addBusRequest);
+            return ResponseEntity.ok("ok");
+        } catch (AddBusException e) {
+            return new ResponseEntity<>(e.getMessage(), e.getStatus());
+        } catch (Exception e) {
+            return new ResponseEntity<>("Internal Server Error",HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        adminService.add(addBusRequest);
-        return ResponseEntity.ok("ok");
     }
 
     @PutMapping("/update")

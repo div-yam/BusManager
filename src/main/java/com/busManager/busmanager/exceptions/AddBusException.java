@@ -6,9 +6,9 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @Setter
-public class SignUpException extends RuntimeException{
+public class AddBusException extends RuntimeException {
     private HttpStatus status;
-    public SignUpException(String message) {
+    public AddBusException(String message) {
         super(message);
         this.status = HttpStatus.BAD_REQUEST;
     }

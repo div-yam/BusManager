@@ -11,7 +11,6 @@ public class BusManagerApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(BusManagerApplication.class, args);
 	}
-
 	@Bean
 	public FilterRegistrationBean<AuthFilter> filterRegistrationBean(){
 		FilterRegistrationBean<AuthFilter> registrationBean= new FilterRegistrationBean<>();
@@ -20,5 +19,4 @@ public class BusManagerApplication {
 		registrationBean.addUrlPatterns("/api/*");
 		return registrationBean;
 	}
-
 }
