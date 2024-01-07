@@ -5,14 +5,13 @@ import com.busManager.busmanager.data.request.AddBusRequest;
 import com.busManager.busmanager.data.request.DeleteBusRequest;
 import com.busManager.busmanager.data.request.UpdateBusRequest;
 import com.busManager.busmanager.exceptions.AddBusException;
+import com.busManager.busmanager.exceptions.UpdateBusException;
 import com.busManager.busmanager.services.AdminService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Collections;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -37,19 +36,34 @@ public class Admin {
     }
 
     @PutMapping("/update")
-    public String update(@RequestBody UpdateBusRequest updateBusRequest){
-        adminService.update(updateBusRequest);
-        return null;
+    public ResponseEntity<String> update(@RequestBody UpdateBusRequest updateBusRequest, HttpServletRequest httpServletRequest){
+        try {
+            UserRole userRole = UserRole.valueOf(String.valueOf(httpServletRequest.getAttribute("role")));
+            if(!userRole.equals(UserRole.ADMIN)){
+                return new ResponseEntity<>("forbidden",HttpStatus.FORBIDDEN);
+            }
+            adminService.update(updateBusRequest);
+            return ResponseEntity.ok("ok");
+        } catch (UpdateBusException e) {
+            return new ResponseEntity<>(e.getMessage(), e.getStatus());
+        } catch (Exception e) {
+            return new ResponseEntity<>("Internal Server Error",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<String> delete(@RequestBody DeleteBusRequest deleteBusRequest, HttpServletRequest httpServletRequest){
-        UserRole userRole = UserRole.valueOf(String.valueOf(httpServletRequest.getAttribute("role")));
-        if(!userRole.equals(UserRole.ADMIN)){
-            return new ResponseEntity<>("forbidden",HttpStatus.FORBIDDEN);
+        try {
+            UserRole userRole = UserRole.valueOf(String.valueOf(httpServletRequest.getAttribute("role")));
+            if(!userRole.equals(UserRole.ADMIN)){
+                return new ResponseEntity<>("forbidden",HttpStatus.FORBIDDEN);
+            }
+            adminService.delete(deleteBusRequest);
+            return ResponseEntity.ok("ok");
+        } catch (UpdateBusException e) {
+            return new ResponseEntity<>(e.getMessage(), e.getStatus());
+        } catch (Exception e) {
+            return new ResponseEntity<>("Internal Server Error",HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        adminService.delete(deleteBusRequest);
-        return null;
     }
-
 }

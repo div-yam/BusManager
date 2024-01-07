@@ -3,6 +3,7 @@ package com.busManager.busmanager.repositories.implementations;
 import com.busManager.busmanager.data.request.AddBusRequest;
 import com.busManager.busmanager.data.request.UpdateBusRequest;
 import com.busManager.busmanager.exceptions.AddBusException;
+import com.busManager.busmanager.exceptions.UpdateBusException;
 import com.busManager.busmanager.repositories.AdminRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -129,11 +130,21 @@ public class AdminRepoImpl implements AdminRepo {
 
     @Override
     public boolean deleteBus(String busId) {
-        return jdbcTemplate.update(DELETE_BUS_SQL, busId) > 0;
+        try {
+            return jdbcTemplate.update(DELETE_BUS_SQL, busId) > 0;
+        } catch (Exception e) {
+            throw new UpdateBusException("Error while deleting bus");
+        }
+
     }
     @Override
     public boolean updateBus(UpdateBusRequest updateBusRequest) {
-        return jdbcTemplate.update(UPDATE_BUS_TIME_SQL,
-                updateBusRequest.getNewDepartureTime(), updateBusRequest.getBusName()) > 0;
+        try {
+            return jdbcTemplate.update(UPDATE_BUS_TIME_SQL,
+                    updateBusRequest.getNewDepartureTime(), updateBusRequest.getBusName()) > 0;
+        } catch (Exception e) {
+            throw new UpdateBusException("Error while updating bus information");
+        }
+
     }
 }
