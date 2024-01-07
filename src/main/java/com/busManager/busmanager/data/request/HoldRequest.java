@@ -3,13 +3,15 @@ package com.busManager.busmanager.data.request;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
+import java.sql.Date;
+
 
 @Getter
 @Setter
 public class HoldRequest {
-    private String busId;
+    private Integer busRouteId;
     private String source;
     private String destination;
     private Date departureTime;
+    private Integer userId;
 }

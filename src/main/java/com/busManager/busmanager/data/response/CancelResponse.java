@@ -6,5 +6,5 @@ import org.springframework.http.HttpStatus;
 @Getter
 @Setter
 public class CancelResponse {
-    HttpStatus httpStatus;
+    Boolean bookingCanceled;
 }
