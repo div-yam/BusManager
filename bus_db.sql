@@ -65,3 +65,21 @@ CREATE TABLE Bookings (
     status VARCHAR(10),
     time_of_booking TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+-- funciton for seat availability
+CREATE OR REPLACE FUNCTION update_seat_availability(dayOfWeek INT, busRouteId INT, seatsAvailable INT, totalSeats INT)
+RETURNS VOID AS $$
+DECLARE
+    current_date DATE := CURRENT_DATE;
+    is_operational BOOLEAN;
+BEGIN
+    FOR i IN 0..29 LOOP
+        is_operational := EXTRACT(DOW FROM current_date + i) = dayOfWeek;
+
+        IF is_operational THEN
+            INSERT INTO seat_availability (bus_route_id, date, seats_available, total_seats)
+            VALUES (busRouteId, current_date + i, seatsAvailable, totalSeats);
+        END IF;
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+

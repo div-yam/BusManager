@@ -13,7 +13,7 @@ import java.sql.Time;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BusSearchResponse {
-  //  bus_name    | distance | departure_time | bus_route_id
+
     @JsonProperty("bus_name")
     String busName;
 

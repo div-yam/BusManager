@@ -1,22 +1,44 @@
 package com.busManager.busmanager.services.implementations;
 
-import com.busManager.busmanager.data.request.AdditionRequest;
+import com.busManager.busmanager.data.WeekDays;
+import com.busManager.busmanager.data.request.AddBusRequest;
+import com.busManager.busmanager.data.request.DeleteBusRequest;
+import com.busManager.busmanager.repositories.AdminRepo;
 import com.busManager.busmanager.services.AdminService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class AdminServiceImpl implements AdminService {
+    @Autowired
+    AdminRepo adminRepo;
     @Override
-    public String add(AdditionRequest additionRequest) {
+    public String add(AddBusRequest addBusRequest) {
         //Add bus data;
+        Integer busId = adminRepo.addBus(addBusRequest.getBusName(),addBusRequest.getTotalSeats());
+
+        Integer routeId = adminRepo.addRoute(addBusRequest);
 
 
-        // Add routes data;
         // Add bus_routes;
-        //Handle Seat Availability
-        // Handle bus schedule
+        Integer busRouteId=adminRepo.addBusRoute(busId,routeId);
 
-return null;
+        //Handle Seat Availability
+        List<WeekDays> weekDaysList = addBusRequest.getWeekDays();
+        Integer[] weekDaysArray = new Integer[weekDaysList.size()];
+        for (WeekDays weekDay : weekDaysList) {
+           adminRepo.addSeatAvailability(weekDay.index,
+                    busRouteId, addBusRequest.getTotalSeats());
+        }
+
+        // Handle bus schedule
+        for (WeekDays weekDay :addBusRequest.getWeekDays()) {
+            Integer busScheduleId = adminRepo.addBusSchedule(busRouteId, weekDay.value);
+        }
+        return null;
+
 
     }
 
@@ -26,7 +48,8 @@ return null;
     }
 
     @Override
-    public String delete() {
+    public String delete(DeleteBusRequest deleteBusRequest) {
+        boolean deleteBusResponse = adminRepo.deleteBus(deleteBusRequest.getBusName());
         return null;
     }
 }
