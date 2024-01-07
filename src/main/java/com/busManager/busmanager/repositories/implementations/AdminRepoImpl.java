@@ -1,6 +1,7 @@
 package com.busManager.busmanager.repositories.implementations;
 
 import com.busManager.busmanager.data.request.AddBusRequest;
+import com.busManager.busmanager.data.request.UpdateBusRequest;
 import com.busManager.busmanager.repositories.AdminRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -29,6 +30,12 @@ public class AdminRepoImpl implements AdminRepo {
             "WHERE bus_schedule.bus_route_id = bus_routes.bus_route_id\n" +
             "AND bus_routes.bus_id = buses.bus_id\n" +
             "AND buses.bus_name = ?;";
+    private static final String UPDATE_BUS_TIME_SQL = "UPDATE routes\n" +
+            "SET departure_time = ?\n" +
+            "FROM bus_routes\n" +
+            "JOIN buses ON bus_routes.bus_id = buses.bus_id\n" +
+            "WHERE buses.bus_name = ?\n" +
+            "AND bus_routes.route_id = routes.route_id;";
     @Autowired
     JdbcTemplate jdbcTemplate;
 
@@ -101,5 +108,10 @@ public class AdminRepoImpl implements AdminRepo {
     @Override
     public boolean deleteBus(String busId) {
         return jdbcTemplate.update(DELETE_BUS_SQL, busId) > 0;
+    }
+    @Override
+    public boolean updateBus(UpdateBusRequest updateBusRequest) {
+        return jdbcTemplate.update(UPDATE_BUS_TIME_SQL,
+                updateBusRequest.getNewDepartureTime(), updateBusRequest.getBusName()) > 0;
     }
 }
