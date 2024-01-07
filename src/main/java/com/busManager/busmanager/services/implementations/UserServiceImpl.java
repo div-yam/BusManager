@@ -40,15 +40,9 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public CheckEligibilityResponse checkEligibility(CheckEligibilityRequest checkEligibilityRequest) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(checkEligibilityRequest.getDepartureDate());
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH) + 1;
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        String date = year+"-"+month+"-"+day;
 
         CheckEligibilityResponse checkEligibilityResponse =
-                userRepo.getEligibilityResponse(checkEligibilityRequest.getBusRouteId(), date);
+                userRepo.getEligibilityResponse(checkEligibilityRequest.getBusRouteId(), checkEligibilityRequest.getDepartureDate());
 
         return checkEligibilityResponse;
     }
@@ -59,31 +53,33 @@ public class UserServiceImpl implements UserService {
         //check-elegibility
         CheckEligibilityRequest checkEligibilityRequest=new CheckEligibilityRequest();
         checkEligibilityRequest.setBusRouteId(holdRequest.getBusRouteId());
-        checkEligibilityRequest.setDepartureDate(holdRequest.getDepartureTime());
+        checkEligibilityRequest.setDepartureDate(holdRequest.getDepartureDate());
         CheckEligibilityResponse checkEligibilityResponse= checkEligibility(checkEligibilityRequest);
         if(Objects.isNull(checkEligibilityResponse) || checkEligibilityResponse.getNumberOfSeats()<1){
             return holdResponse;
         }
         // get list of seat numbers which are booked ||  hold in last 5 minutes
 
-        List<Integer> seats= userRepo.getSeatsBookedOrHold(holdRequest.getDepartureTime(),holdRequest.getBusRouteId());
+        List<Integer> seats= userRepo.getSeatsBookedOrHold(holdRequest.getDepartureDate(),holdRequest.getBusRouteId());
         Set<Integer> seatSet= new HashSet<>(seats);
         int seatNumber=0;
         for(int i=1;i<=checkEligibilityResponse.getTotalNumberOfSeats();i++){
-            if(!seatSet.contains(i))
-                seatNumber=i;
+            if(!seatSet.contains(i)) {
+                seatNumber = i;
+                break;
+            }
         }
 
         if(seatNumber==0)
             return holdResponse;
 
         // make a booking with hold and update seat availability
-        Integer bookingId= userRepo.holdBooking(holdRequest.getUserId(),holdRequest.getBusRouteId(),holdRequest.getDepartureTime(),seatNumber);
+        Integer bookingId= userRepo.holdBooking(holdRequest.getUserId(),holdRequest.getBusRouteId(),holdRequest.getDepartureDate(),seatNumber);
         if(Objects.isNull(bookingId)) {
             throw new RuntimeException();
         }
 
-        boolean status= userRepo.decreaseAvailableSeatCount(holdRequest.getBusRouteId(), holdRequest.getDepartureTime());
+        boolean status= userRepo.decreaseAvailableSeatCount(holdRequest.getBusRouteId(), holdRequest.getDepartureDate());
         if(!status) {
             throw new RuntimeException();
         }
@@ -92,6 +88,7 @@ public class UserServiceImpl implements UserService {
         //return booking id and seat number
         holdResponse.setAvailability(true);
         holdResponse.setBookingId(bookingId);
+        holdResponse.setSeatNumber(seatNumber);
 
         return holdResponse;
     }
@@ -105,10 +102,10 @@ public class UserServiceImpl implements UserService {
         cancelResponse.setBookingCanceled(false);
         //check bookingID and userId and booking date
         List<Booking> bookings = userRepo.getBooking(cancelRequest.getBookingId());
-        if (Objects.isNull(bookings) || 1 == bookings.size())
+        if (Objects.isNull(bookings) || 1 != bookings.size())
             return cancelResponse;
         //update status of booking
-        boolean cancelSuccess = userRepo.cancelBooking(cancelRequest.getBookingId());
+        boolean cancelSuccess = userRepo.cancelBooking(cancelRequest.getBookingId(), cancelRequest.getUserId());
         if (!cancelSuccess)
             throw new RuntimeException();
 

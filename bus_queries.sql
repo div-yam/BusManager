@@ -156,6 +156,7 @@ LEFT JOIN
 WHERE
     sa.bus_route_id = 1
     AND sa.date = '2024-01-15'
+    AND (b.status = 'BOOK' OR (b.status = 'HOLD' AND b.time_of_booking >= NOW() - INTERVAL '5 minutes' ))
 GROUP BY
     sa.total_seats, sa.bus_route_id;
 

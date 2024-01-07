@@ -6,4 +6,5 @@ import lombok.Setter;
 @Setter
 public class CancelRequest {
     private Integer bookingId;
+    private Integer userId;
 }

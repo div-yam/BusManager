@@ -7,4 +7,5 @@ import lombok.Setter;
 public class HoldResponse {
     Integer bookingId;
     Boolean availability;
+    Integer seatNumber;
 }

@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface UserRepo {
     public List<BusSearchResponse> getBuses(String source, String destination, String day);
-    public CheckEligibilityResponse getEligibilityResponse(Integer busRouteId, String date);
+    public CheckEligibilityResponse getEligibilityResponse(Integer busRouteId, Date date);
 
     //insert booking hold user_id, bus_route_id, date_of_travel, seat_number, status
     public Integer holdBooking(Integer userId, Integer busRouteId, Date dateOfTravel, int seatNumber);
@@ -22,7 +22,7 @@ public interface UserRepo {
     //update booking book booking_id = 1
     //AND user_id = 1
     public boolean updateBookingStatus(Integer bookingId, Integer userId);
-    public boolean cancelBooking(Integer bookingId);
+    public boolean cancelBooking(Integer bookingId, Integer userId);
     public List<Booking> getBooking(Integer bookingId);
     public boolean increaseAvailableSeatCount(Integer busRouteId, Date dateOfTravel);
 }

@@ -12,6 +12,6 @@ public class HoldRequest {
     private Integer busRouteId;
     private String source;
     private String destination;
-    private Date departureTime;
+    private Date departureDate;
     private Integer userId;
 }

@@ -50,7 +50,7 @@ public class UserRepoImpl implements UserRepo {
             "    bookings b ON sa.bus_route_id = b.bus_route_id AND sa.date = b.date_of_travel\n" +
             "WHERE\n" +
             "    sa.bus_route_id = ?\n" +
-            "    AND sa.date = ?\n" +
+            "    AND sa.date = ? AND (b.status = 'BOOK' OR (b.status = 'HOLD' AND b.time_of_booking >= NOW() - INTERVAL '5 minutes' ))\n" +
             "GROUP BY\n" +
             "    sa.total_seats, sa.bus_route_id;";
 
@@ -76,7 +76,7 @@ public class UserRepoImpl implements UserRepo {
 
     private static final String BOOKING_CANCEL= "UPDATE bookings\n" +
             "SET status = 'CANCEL'\n" +
-            "WHERE booking_id = ?\n" +
+            "WHERE booking_id = ? AND user_id = ?\n" +
             "AND status = 'BOOK';";
 
     private static final String GET_BOOKING= "Select * from bookings WHERE booking_id=?";
@@ -103,7 +103,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public CheckEligibilityResponse getEligibilityResponse(Integer busRouteId, String date) {
+    public CheckEligibilityResponse getEligibilityResponse(Integer busRouteId, Date date) {
         return jdbcTemplate.queryForObject(GET_ELIGIBILITY_RESPONSE, new Object[]{busRouteId, date}, new RowMapper<CheckEligibilityResponse>() {
             @Override
             public CheckEligibilityResponse mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -139,7 +139,13 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public List getSeatsBookedOrHold(Date dateOfTravel, Integer busRouteID) {
-        return jdbcTemplate.queryForObject(GET_BOOKED_SEATS, List.class, busRouteID, dateOfTravel);
+        return jdbcTemplate.query(GET_BOOKED_SEATS, new Object[]{busRouteID, dateOfTravel},
+                new RowMapper<Integer>() {
+                    public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        return rs.getInt("seat_number");
+                    }
+                }
+        );
     }
 
     @Override
@@ -148,8 +154,8 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public boolean cancelBooking(Integer bookingId) {
-        return jdbcTemplate.update(BOOKING_CANCEL,bookingId) > 0;
+    public boolean cancelBooking(Integer bookingId, Integer userId) {
+        return jdbcTemplate.update(BOOKING_CANCEL,bookingId,userId) > 0;
     }
 
     @Override
