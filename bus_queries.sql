@@ -49,6 +49,23 @@ BEGIN
     END LOOP;
 END $$;
 
+DO $$
+DECLARE
+    current_date DATE := CURRENT_DATE;
+    is_operational BOOLEAN;
+    dayOfWeek INT := YourDayOfWeekValue; -- Replace with your desired day of the week (1 for Monday, etc.)
+BEGIN
+    FOR i IN 0..29 LOOP
+        is_operational := EXTRACT(DOW FROM current_date + i) = dayOfWeek;
+
+        IF is_operational THEN
+            INSERT INTO seat_availability (bus_route_id, date, seats_available, total_seats)
+            VALUES (1, current_date + i, 50, 50);
+        END IF;
+    END LOOP;
+END $$;
+
+
 INSERT INTO bus_schedule (bus_route_id, day_of_week, active) VALUES (1, 'Monday', TRUE);
 INSERT INTO bus_schedule (bus_route_id, day_of_week, active) VALUES (1, 'Wednesday', TRUE);
 INSERT INTO bus_schedule (bus_route_id, day_of_week, active) VALUES (2, 'Monday', TRUE);

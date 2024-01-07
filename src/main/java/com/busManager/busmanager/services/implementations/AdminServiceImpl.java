@@ -1,10 +1,15 @@
 package com.busManager.busmanager.services.implementations;
 
+import com.busManager.busmanager.data.WeekDays;
 import com.busManager.busmanager.data.request.AddBusRequest;
 import com.busManager.busmanager.repositories.AdminRepo;
 import com.busManager.busmanager.services.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.sql.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -13,19 +18,27 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public String add(AddBusRequest addBusRequest) {
         //Add bus data;
-        Integer busId=adminRepo.addBus(addBusRequest.getBusName(),addBusRequest.getTotalSeats());
+        Integer busId = adminRepo.addBus(addBusRequest.getBusName(),addBusRequest.getTotalSeats());
 
-        Integer routeId= adminRepo.addRoute(addBusRequest);
+        Integer routeId = adminRepo.addRoute(addBusRequest);
 
 
         // Add bus_routes;
         Integer busRouteId=adminRepo.addBusRoute(busId,routeId);
 
         //Handle Seat Availability
+//        List<WeekDays> weekDaysList = addBusRequest.getWeekDays();
+//        Integer[] weekDaysArray = new Integer[weekDaysList.size()];
+//        for (WeekDays weekDay : weekDaysList) {
+//            boolean seatAvailabilityId = adminRepo.addSeatAvailability(weekDay.index,
+//                    busRouteId, addBusRequest.getTotalSeats());
+//        }
 
         // Handle bus schedule
-
-return null;
+        for (WeekDays weekDay :addBusRequest.getWeekDays()) {
+            Integer busScheduleId = adminRepo.addBusSchedule(busRouteId, weekDay.value);
+        }
+        return null;
 
 
     }
