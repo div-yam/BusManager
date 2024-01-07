@@ -1,11 +1,11 @@
 package com.busManager.busmanager.data.request;
 
 import com.busManager.busmanager.data.WeekDays;
-import lombok.Getter;
-import lombok.Setter;
+        import lombok.Getter;
+        import lombok.Setter;
 
-import java.sql.Time;
-import java.util.List;
+        import java.sql.Time;
+        import java.util.List;
 
 @Getter
 @Setter

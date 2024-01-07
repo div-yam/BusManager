@@ -23,6 +23,12 @@ public class AdminRepoImpl implements AdminRepo {
     private static final String ADD_BUS_ROUTE_SQL="INSERT INTO bus_routes (bus_id, route_id) VALUES (?, ?);";
     private static final String ADD_SEAT_AVAILABILITY = "SELECT update_seat_availability(?, ?, ?, ?)";
     private static final String ADD_BUS_SCHEDULE_SQL = "INSERT INTO bus_schedule (bus_route_id, day_of_week, active) VALUES (?, ?, TRUE);";
+    private static final String DELETE_BUS_SQL =  "UPDATE bus_schedule\n" +
+            "SET active = false\n" +
+            "FROM bus_routes, buses\n" +
+            "WHERE bus_schedule.bus_route_id = bus_routes.bus_route_id\n" +
+            "AND bus_routes.bus_id = buses.bus_id\n" +
+            "AND buses.bus_name = ?;";
     @Autowired
     JdbcTemplate jdbcTemplate;
 
@@ -90,5 +96,10 @@ public class AdminRepoImpl implements AdminRepo {
             return ps;
         }, keyHolder);
         return (Integer) Objects.requireNonNull(keyHolder.getKeys()).get("SCHEDULE_ID");
+    }
+
+    @Override
+    public boolean deleteBus(String busId) {
+        return jdbcTemplate.update(DELETE_BUS_SQL, busId) > 0;
     }
 }

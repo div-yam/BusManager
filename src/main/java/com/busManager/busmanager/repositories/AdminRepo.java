@@ -10,4 +10,5 @@ public interface AdminRepo {
     public Integer addBusRoute(Integer busId, Integer routeId);
     public void addSeatAvailability(Integer weekDay, Integer busRouteId, Integer totalNumberOfSeats);
     public Integer addBusSchedule(Integer busRoutedId, String weekDay);
+    public boolean deleteBus(String busId);
 }

@@ -95,11 +95,11 @@ INSERT INTO bus_schedule (bus_route_id, day_of_week, active) VALUES (4, 'Wednesd
 
 --delete
 UPDATE bus_schedule
-SET active = true
+SET active = false
 FROM bus_routes, buses
 WHERE bus_schedule.bus_route_id = bus_routes.bus_route_id
 AND bus_routes.bus_id = buses.bus_id
-AND buses.bus_name = 'Express Line 1';
+AND buses.bus_name = 'Exp 3';
 
 ---search buses
 SELECT

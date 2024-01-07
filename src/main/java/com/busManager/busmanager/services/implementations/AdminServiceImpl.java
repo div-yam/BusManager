@@ -2,13 +2,12 @@ package com.busManager.busmanager.services.implementations;
 
 import com.busManager.busmanager.data.WeekDays;
 import com.busManager.busmanager.data.request.AddBusRequest;
+import com.busManager.busmanager.data.request.DeleteBusRequest;
 import com.busManager.busmanager.repositories.AdminRepo;
 import com.busManager.busmanager.services.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Array;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -49,7 +48,8 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public String delete() {
+    public String delete(DeleteBusRequest deleteBusRequest) {
+        boolean deleteBusResponse = adminRepo.deleteBus(deleteBusRequest.getBusName());
         return null;
     }
 }
