@@ -3,6 +3,7 @@ package com.busManager.busmanager.services.implementations;
 import com.busManager.busmanager.data.WeekDays;
 import com.busManager.busmanager.data.request.AddBusRequest;
 import com.busManager.busmanager.data.request.DeleteBusRequest;
+import com.busManager.busmanager.data.request.UpdateBusRequest;
 import com.busManager.busmanager.repositories.AdminRepo;
 import com.busManager.busmanager.services.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,8 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public String update() {
+    public String update(UpdateBusRequest updateBusRequest) {
+        boolean updateBusResponse = adminRepo.updateBus(updateBusRequest);
         return null;
     }
 

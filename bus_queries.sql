@@ -193,4 +193,9 @@ AND status = 'BOOK';
 
 
 -----
-
+UPDATE routes
+SET departure_time = '16:00:00'
+FROM bus_routes
+JOIN buses ON bus_routes.bus_id = buses.bus_id
+WHERE buses.bus_name = 'Exp 1'
+AND bus_routes.route_id = routes.route_id;

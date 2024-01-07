@@ -2,6 +2,7 @@ package com.busManager.busmanager.controllers;
 
 import com.busManager.busmanager.data.request.AddBusRequest;
 import com.busManager.busmanager.data.request.DeleteBusRequest;
+import com.busManager.busmanager.data.request.UpdateBusRequest;
 import com.busManager.busmanager.services.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,8 @@ public class Admin {
     }
 
     @PutMapping("/update")
-    public String update(){
+    public String update(@RequestBody UpdateBusRequest updateBusRequest){
+        adminService.update(updateBusRequest);
         return null;
     }
 
