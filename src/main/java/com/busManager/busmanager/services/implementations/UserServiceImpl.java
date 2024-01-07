@@ -9,12 +9,15 @@ import com.busManager.busmanager.repositories.UserRepo;
 import com.busManager.busmanager.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
     @Autowired
     UserRepo userRepo;
@@ -52,14 +55,45 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public HoldResponse hold(HoldRequest holdRequest) {
+
+        //check-elegibility
+        CheckEligibilityRequest checkEligibilityRequest=new CheckEligibilityRequest();
+        checkEligibilityRequest.setBusRouteId(holdRequest.getBusRouteId());
+        checkEligibilityRequest.setDepartureDate(holdRequest.getDepartureTime());
+        CheckEligibilityResponse checkEligibilityResponse= checkEligibility(checkEligibilityRequest);
+        if(Objects.isNull(checkEligibilityResponse) || checkEligibilityResponse.getNumberOfSeats()<1){
+            return null;
+        }
+        // get list of seat numbers which are booked ||  hold in last 5 minutes
+        // get total seats
+
+
+
+
+
+
+        // make a booking with hold and update seat availability
+
+
+        //return booking id and seat number
+
+
         return null;
     }
     @Override
     public BookResponse book(BookRequest bookRequest) {
+
+        //check is hold expired
+        //update the status of booking
         return null;
     }
     @Override
     public CancelResponse cancel(CancelRequest cancelRequest) {
+        //check bookingID and userId and booking date
+        //update status of booking
+        //update seat count
+
+
         return null;
     }
 }

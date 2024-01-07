@@ -62,5 +62,6 @@ CREATE TABLE Bookings (
     bus_route_id INT REFERENCES Bus_Routes(bus_route_id),
     date_of_travel DATE not null,
     seat_number INT not null,
-    status VARCHAR(10)
+    status VARCHAR(10),
+    time_of_booking TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

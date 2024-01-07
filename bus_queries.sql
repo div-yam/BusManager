@@ -29,7 +29,7 @@ BEGIN
 
         IF is_operational THEN
             INSERT INTO seat_availability (bus_route_id, date, seats_available, total_seats)
-            VALUES (1, current_date + i, 50, 50);
+            VALUES (3, current_date + i, 50, 50);
         END IF;
     END LOOP;
 END $$;
@@ -44,7 +44,7 @@ BEGIN
 
         IF is_operational THEN
             INSERT INTO seat_availability (bus_route_id, date, seats_available, total_seats)
-            VALUES (2, current_date + i, 50, 50);
+            VALUES (4, current_date + i, 50, 50);
         END IF;
     END LOOP;
 END $$;
@@ -126,7 +126,31 @@ GROUP BY
     sa.total_seats, sa.bus_route_id;
 
     --
+--user
+Insert into users(name,email,password,role) values('Divyam','divyam@ga','divyam','ADMIN');
+
+--booking
+INSERT INTO bookings (user_id, bus_route_id, date_of_travel, seat_number, status)
+VALUES (1, 1, '2024-01-10', 1, 'HOLD');
+
+UPDATE seat_availability
+SET seats_available = seats_available - 1
+WHERE bus_route_id = 1 AND date = '2024-01-10';
+
+SELECT seat_number
+FROM bookings
+WHERE bus_route_id = 1
+AND date_of_travel = '2024-01-10'
+AND (status = 'BOOK' OR (status = 'HOLD' AND time_of_booking >= NOW() - INTERVAL '5 minutes' ));
 
 
+UPDATE bookings
+SET status = 'BOOK'
+WHERE booking_id = 1
+AND user_id = 1
+AND status = 'HOLD'
+AND time_of_booking >= NOW() - INTERVAL '5 minutes';
 
+
+-----
 
