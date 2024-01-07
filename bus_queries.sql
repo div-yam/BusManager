@@ -151,6 +151,11 @@ AND user_id = 1
 AND status = 'HOLD'
 AND time_of_booking >= NOW() - INTERVAL '5 minutes';
 
+UPDATE bookings
+SET status = 'CANCEL'
+WHERE booking_id = 1
+AND status = 'BOOK';
+
 
 -----
 

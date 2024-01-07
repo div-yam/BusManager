@@ -13,4 +13,5 @@ public class HoldRequest {
     private String source;
     private String destination;
     private Date departureTime;
+    private Integer userId;
 }
