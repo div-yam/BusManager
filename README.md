@@ -32,6 +32,7 @@ Important Links -
 
 - [https://drive.google.com/drive/u/0/folders/1dTQA0VpKemL4DJu3f89NPfk_yT7wvV6C](https://drive.google.com/file/d/1Zk_bodh5XN8c7yiQe4FXfsM-szawtUj2/view?usp=sharing) (Bus Manager Postman Collection)
 [https://drive.google.com/drive/u/0/folders/1dTQA0VpKemL4DJu3f89NPfk_yT7wvV6C](https://drive.google.com/file/d/1ug-OiQjEFiJBX2hZITWiSVvU5AO-USyK/view?usp=sharing) (Contains the video demonstration of this application)
+- https://github.com/div-yam/BusManagerAdmin/tree/master (Bus Manager Admin)
 
 Implementation Details:
 1. Authentication:
