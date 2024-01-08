@@ -1,6 +1,6 @@
 package com.busManager.busmanager.controllers;
 
-import com.busManager.busmanager.data.UserRole;
+import com.busManager.busmanager.data.enums.UserRole;
 import com.busManager.busmanager.data.request.AddBusRequest;
 import com.busManager.busmanager.data.request.DeleteBusRequest;
 import com.busManager.busmanager.data.request.UpdateBusRequest;

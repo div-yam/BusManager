@@ -1,6 +1,6 @@
 package com.busManager.busmanager.repositories.implementations;
 
-import com.busManager.busmanager.data.BookingStatus;
+import com.busManager.busmanager.data.enums.BookingStatus;
 import com.busManager.busmanager.data.dto.Booking;
 import com.busManager.busmanager.data.dto.BusSearchResponse;
 import com.busManager.busmanager.data.response.CheckEligibilityResponse;
@@ -18,7 +18,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.awt.print.Book;
 import java.sql.*;
 
 import java.util.List;

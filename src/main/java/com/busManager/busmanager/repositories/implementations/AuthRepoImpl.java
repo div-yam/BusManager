@@ -1,9 +1,8 @@
 package com.busManager.busmanager.repositories.implementations;
 
-import com.busManager.busmanager.data.UserRole;
+import com.busManager.busmanager.data.enums.UserRole;
 import com.busManager.busmanager.data.dto.AddUserRequest;
 import com.busManager.busmanager.data.dto.User;
-import com.busManager.busmanager.data.request.SignInRequest;
 import com.busManager.busmanager.repositories.AuthRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;

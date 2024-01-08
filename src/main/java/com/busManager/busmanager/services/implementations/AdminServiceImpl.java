@@ -1,6 +1,6 @@
 package com.busManager.busmanager.services.implementations;
 
-import com.busManager.busmanager.data.WeekDays;
+import com.busManager.busmanager.data.enums.WeekDays;
 import com.busManager.busmanager.data.request.AddBusRequest;
 import com.busManager.busmanager.data.request.DeleteBusRequest;
 import com.busManager.busmanager.data.request.UpdateBusRequest;

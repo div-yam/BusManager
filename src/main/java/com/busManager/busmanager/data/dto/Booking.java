@@ -1,6 +1,6 @@
 package com.busManager.busmanager.data.dto;
 
-import com.busManager.busmanager.data.BookingStatus;
+import com.busManager.busmanager.data.enums.BookingStatus;
 import lombok.Getter;
 import lombok.Setter;
 

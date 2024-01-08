@@ -1,6 +1,6 @@
 package com.busManager.busmanager.services.implementations;
 
-import com.busManager.busmanager.data.UserRole;
+import com.busManager.busmanager.data.enums.UserRole;
 import com.busManager.busmanager.data.dto.AddUserRequest;
 import com.busManager.busmanager.data.dto.User;
 import com.busManager.busmanager.data.request.LoginRequest;
@@ -8,7 +8,6 @@ import com.busManager.busmanager.data.request.SignInRequest;
 import com.busManager.busmanager.exceptions.PasswordMismatchException;
 import com.busManager.busmanager.exceptions.SignUpException;
 import com.busManager.busmanager.repositories.AuthRepo;
-import com.busManager.busmanager.repositories.implementations.UserRepoImpl;
 import com.busManager.busmanager.services.AuthService;
 import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;

@@ -1,6 +1,6 @@
 package com.busManager.busmanager.data.request;
 
-import com.busManager.busmanager.data.WeekDays;
+import com.busManager.busmanager.data.enums.WeekDays;
         import lombok.Getter;
         import lombok.Setter;
 

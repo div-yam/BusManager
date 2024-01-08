@@ -1,6 +1,6 @@
 package com.busManager.busmanager.data.dto;
 
-import com.busManager.busmanager.data.UserRole;
+import com.busManager.busmanager.data.enums.UserRole;
 import lombok.Getter;
 import lombok.Setter;
 
