@@ -5,6 +5,8 @@ import com.busManager.busmanager.data.request.UpdateBusRequest;
 import com.busManager.busmanager.exceptions.AddBusException;
 import com.busManager.busmanager.exceptions.UpdateBusException;
 import com.busManager.busmanager.repositories.AdminRepo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -40,6 +42,7 @@ public class AdminRepoImpl implements AdminRepo {
             "AND bus_routes.route_id = routes.route_id;";
     @Autowired
     JdbcTemplate jdbcTemplate;
+    private static Logger LOGGER = LoggerFactory.getLogger(AdminRepoImpl.class);
 
     @Override
     public Integer addBus(String busName, Integer totalSeats) {
@@ -53,6 +56,9 @@ public class AdminRepoImpl implements AdminRepo {
             }, keyHolder);
             return (Integer) Objects.requireNonNull(keyHolder.getKeys()).get("BUS_ID");
         } catch (Exception e) {
+            LOGGER.info(String.valueOf(e));
+            LOGGER.info("Bus Name: {}", busName);
+            LOGGER.info("Total seats: {}", totalSeats);
             throw new AddBusException("Error while adding bus to the database");
         }
     }
@@ -71,6 +77,8 @@ public class AdminRepoImpl implements AdminRepo {
             }, keyHolder);
             return (Integer) Objects.requireNonNull(keyHolder.getKeys()).get("ROUTE_ID");
         } catch (Exception e) {
+            LOGGER.info(String.valueOf(e));
+            LOGGER.info("Add Bus Request: {}", addBusRequest);
             throw new AddBusException("Error while adding route to the database");
         }
 
@@ -88,6 +96,9 @@ public class AdminRepoImpl implements AdminRepo {
             }, keyHolder);
             return (Integer) Objects.requireNonNull(keyHolder.getKeys()).get("BUS_ROUTE_ID");
         } catch (Exception e) {
+            LOGGER.info(String.valueOf(e));
+            LOGGER.info("BusId: {}", busId);
+            LOGGER.info("RouteId {}", routeId);
             throw new AddBusException("Error while adding bus route to the database");
         }
     }
@@ -108,6 +119,8 @@ public class AdminRepoImpl implements AdminRepo {
                 }
             });
         } catch (Exception e) {
+            LOGGER.error("Error while adding seat availability to the database. WeekDay: {}, BusRouteId: {}, TotalNumberOfSeats: {}", weekDay, busRouteId, totalNumberOfSeats);
+            LOGGER.error("Exception details: ", e);
             throw new AddBusException("Error while adding seat availability to the database");
         }
     }
@@ -124,6 +137,8 @@ public class AdminRepoImpl implements AdminRepo {
             }, keyHolder);
             return (Integer) Objects.requireNonNull(keyHolder.getKeys()).get("SCHEDULE_ID");
         } catch (Exception e) {
+            LOGGER.error("Error while adding bus schedule to the database. BusRouteId: {}, WeekDay: {}", busRoutedId, weekDay);
+            LOGGER.error("Exception details: ", e);
             throw new AddBusException("Error while adding bus schedule to the database");
         }
     }
@@ -133,6 +148,7 @@ public class AdminRepoImpl implements AdminRepo {
         try {
             return jdbcTemplate.update(DELETE_BUS_SQL, busId) > 0;
         } catch (Exception e) {
+            LOGGER.error("Error while deleting bus with ID {}: {}", busId, e.getMessage());
             throw new UpdateBusException("Error while deleting bus");
         }
 
@@ -143,6 +159,8 @@ public class AdminRepoImpl implements AdminRepo {
             return jdbcTemplate.update(UPDATE_BUS_TIME_SQL,
                     updateBusRequest.getNewDepartureTime(), updateBusRequest.getBusName()) > 0;
         } catch (Exception e) {
+            LOGGER.error("Error while updating bus information for bus with name {}: {}",
+                    updateBusRequest.getBusName(), e.getMessage());
             throw new UpdateBusException("Error while updating bus information");
         }
 

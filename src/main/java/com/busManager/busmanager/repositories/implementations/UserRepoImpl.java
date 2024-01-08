@@ -9,6 +9,8 @@ import com.busManager.busmanager.exceptions.CheckEligibilityException;
 import com.busManager.busmanager.exceptions.HoldBookingException;
 import com.busManager.busmanager.exceptions.SearchBusException;
 import com.busManager.busmanager.repositories.UserRepo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -80,6 +82,7 @@ public class UserRepoImpl implements UserRepo {
             "WHERE bus_route_id = ? AND date = ?;";
     @Autowired
     JdbcTemplate jdbcTemplate;
+    private static Logger LOGGER = LoggerFactory.getLogger(UserRepoImpl.class);
 
     @Override
     public List<BusSearchResponse> getBuses(String source, String destination, String day) {
@@ -96,6 +99,7 @@ public class UserRepoImpl implements UserRepo {
                     return busSearchResponse;
                 }});
         } catch (Exception e) {
+            LOGGER.error("Error while searching buses from {} to {} on {}: {}", source, destination, day, e.getMessage());
             throw new SearchBusException("Error while searching buses");
         }
     }
@@ -109,10 +113,13 @@ public class UserRepoImpl implements UserRepo {
                     CheckEligibilityResponse checkEligibilityResponse = new CheckEligibilityResponse();
                     checkEligibilityResponse.setNumberOfSeats(rs.getInt("seats_available"));
                     checkEligibilityResponse.setTotalNumberOfSeats(rs.getInt("total_seats"));
+                    checkEligibilityResponse.setColor(calculateOccupancyStatus(rs.getInt("seats_available"),
+                            rs.getInt("total_seats")));
                     return checkEligibilityResponse;
                 }
             });
         } catch (Exception e) {
+            LOGGER.error("Error while checking eligibility for BusRouteId: {} and Date: {}: {}", busRouteId, date, e.getMessage());
             throw new CheckEligibilityException("Error while checking eligibility");
         }
 
@@ -132,9 +139,10 @@ public class UserRepoImpl implements UserRepo {
             }, keyHolder);
             return (Integer) Objects.requireNonNull(keyHolder.getKeys()).get("BOOKING_ID");
         } catch (Exception e) {
+            LOGGER.error("Error while holding booking for User ID: {}, BusRouteId: {}, Date of Travel: {}, Seat Number: {}: {}",
+                    userId, busRouteId, dateOfTravel, seatNumber, e.getMessage());
             throw new HoldBookingException("Error while holding booking");
         }
-
     }
 
     @Override
@@ -142,6 +150,7 @@ public class UserRepoImpl implements UserRepo {
         try {
             return jdbcTemplate.update(DECREASE_SEAT_COUNT, busRouteId, dateOfTravel) == 1;
         } catch (Exception e) {
+            LOGGER.error("Error while decreasing available seat count for BusRouteId: {} and Date of Travel: {}: {}", busRouteId, dateOfTravel, e.getMessage());
             throw new BookException("Error while decreasing seats");
         }
 
@@ -158,6 +167,8 @@ public class UserRepoImpl implements UserRepo {
                     }
             );
         } catch (Exception e) {
+            LOGGER.error("Error while getting booked or held seats for BusRouteId: {} and Date of Travel: {}: {}",
+                    busRouteID, dateOfTravel, e.getMessage());
             throw new BookException("Error while getting seats");
         }
 
@@ -168,6 +179,8 @@ public class UserRepoImpl implements UserRepo {
         try {
             return jdbcTemplate.update(UPDATE_BOOKING, bookingId, userId) == 1;
         } catch (Exception e) {
+            LOGGER.error("Error while updating booking status for Booking ID: {} and User ID: {}: {}",
+                    bookingId, userId, e.getMessage());
             throw new BookException("Error while updating booking status");
         }
 
@@ -178,6 +191,8 @@ public class UserRepoImpl implements UserRepo {
         try {
             return jdbcTemplate.update(BOOKING_CANCEL,bookingId,userId) > 0;
         } catch (Exception e) {
+            LOGGER.error("Error while canceling booking for Booking ID: {} and User ID: {}: {}",
+                    bookingId, userId, e.getMessage());
             throw new BookException("Error while cancelling booking status");
         }
     }
@@ -198,6 +213,7 @@ public class UserRepoImpl implements UserRepo {
                     return booking;
                 }});
         } catch (Exception e) {
+            LOGGER.error("Error while fetching booking for Booking ID {}: {}", bookingId, e.getMessage());
             throw new BookException("Error while fetching booking");
         }
 
@@ -208,6 +224,8 @@ public class UserRepoImpl implements UserRepo {
         try {
             return jdbcTemplate.update(INCREASE_SEAT_COUNT, busRouteId, dateOfTravel) == 1;
         } catch (Exception e) {
+            LOGGER.error("Error while increasing available seat count for BusRouteId: {} and Date of Travel: {}: {}",
+                    busRouteId, dateOfTravel, e.getMessage());
             throw new BookException("Error while increasing seat count");
         }
     }
@@ -234,6 +252,23 @@ public class UserRepoImpl implements UserRepo {
 
             return ETA;
         }
-        return null; // Handle missing data gracefully
+        return null;
+    }
+    public String calculateOccupancyStatus(Integer currentSeats, Integer totalSeats) {
+        if (currentSeats == null || totalSeats == null || totalSeats == 0) {
+            return "Invalid Input"; // Handle invalid input gracefully
+        }
+        Integer remainingSeats = totalSeats - currentSeats;
+        double occupancyPercentage = (double) remainingSeats / totalSeats * 100;
+
+        if (occupancyPercentage <= 60) {
+            return "Green";
+        } else if (occupancyPercentage > 60 && occupancyPercentage <= 80) {
+            return "Yellow";
+        } else if (occupancyPercentage >= 90) {
+            return "Red";
+        } else {
+            return "Unknown"; // Handle any other cases
+        }
     }
 }

@@ -8,8 +8,11 @@ import com.busManager.busmanager.data.request.SignInRequest;
 import com.busManager.busmanager.exceptions.PasswordMismatchException;
 import com.busManager.busmanager.exceptions.SignUpException;
 import com.busManager.busmanager.repositories.AuthRepo;
+import com.busManager.busmanager.repositories.implementations.UserRepoImpl;
 import com.busManager.busmanager.services.AuthService;
 import org.mindrot.jbcrypt.BCrypt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Service;
 public class AuthServiceImpl implements AuthService {
     @Autowired
     AuthRepo authRepo;
+    private static Logger LOGGER = LoggerFactory.getLogger(AuthServiceImpl.class);
     @Override
     public User signIn(SignInRequest signInRequest) {
         try {
@@ -27,6 +31,7 @@ public class AuthServiceImpl implements AuthService {
             User user= authRepo.addUser(addUserRequest);
             return user;
         } catch (Exception e) {
+            LOGGER.error("Error while signing in for Email: {}: {}", signInRequest.getEmail().toLowerCase(), e.getMessage());
             throw new SignUpException("SignUp Exception");
         }
 
