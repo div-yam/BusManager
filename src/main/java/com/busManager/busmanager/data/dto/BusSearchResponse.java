@@ -23,5 +23,5 @@ public class BusSearchResponse {
 
     @JsonProperty("bus_route_id")
     Integer busRouteId;
-
+    Time ETA;
 }

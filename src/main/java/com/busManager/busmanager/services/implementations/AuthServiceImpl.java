@@ -5,9 +5,14 @@ import com.busManager.busmanager.data.dto.AddUserRequest;
 import com.busManager.busmanager.data.dto.User;
 import com.busManager.busmanager.data.request.LoginRequest;
 import com.busManager.busmanager.data.request.SignInRequest;
+import com.busManager.busmanager.exceptions.PasswordMismatchException;
+import com.busManager.busmanager.exceptions.SignUpException;
 import com.busManager.busmanager.repositories.AuthRepo;
+import com.busManager.busmanager.repositories.implementations.UserRepoImpl;
 import com.busManager.busmanager.services.AuthService;
 import org.mindrot.jbcrypt.BCrypt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,14 +20,21 @@ import org.springframework.stereotype.Service;
 public class AuthServiceImpl implements AuthService {
     @Autowired
     AuthRepo authRepo;
+    private static Logger LOGGER = LoggerFactory.getLogger(AuthServiceImpl.class);
     @Override
     public User signIn(SignInRequest signInRequest) {
-        AddUserRequest addUserRequest = new AddUserRequest();
-        addUserRequest.setEmail(signInRequest.getEmail().toLowerCase());
-        addUserRequest.setName(signInRequest.getName());
-        addUserRequest.setPassword(BCrypt.hashpw(signInRequest.getPassword(),BCrypt.gensalt(10)));
-        User user= authRepo.addUser(addUserRequest);
-        return user;
+        try {
+            AddUserRequest addUserRequest = new AddUserRequest();
+            addUserRequest.setEmail(signInRequest.getEmail().toLowerCase());
+            addUserRequest.setName(signInRequest.getName());
+            addUserRequest.setPassword(BCrypt.hashpw(signInRequest.getPassword(),BCrypt.gensalt(10)));
+            User user= authRepo.addUser(addUserRequest);
+            return user;
+        } catch (Exception e) {
+            LOGGER.error("Error while signing in for Email: {}: {}", signInRequest.getEmail().toLowerCase(), e.getMessage());
+            throw new SignUpException("SignUp Exception");
+        }
+
     }
 
     @Override
@@ -31,16 +43,13 @@ public class AuthServiceImpl implements AuthService {
         if(user.getRole().equals(UserRole.ADMIN) )
         {
             if(!user.getPassword().equals(loginRequest.getPassword())) {
-                return null;
-                //todo
-                //thow exception
+                throw new PasswordMismatchException("Admin password mismatch");
             }
             return user;
 
         }
         if( !BCrypt.checkpw(loginRequest.getPassword(),user.getPassword())) {
-            return null;
-            //throw exception}
+            throw new PasswordMismatchException("User password mismatch");
         }
 
         return user;

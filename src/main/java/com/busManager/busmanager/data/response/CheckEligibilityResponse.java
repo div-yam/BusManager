@@ -16,4 +16,5 @@ public class CheckEligibilityResponse {
 
     @JsonProperty("total_seats")
     Integer totalNumberOfSeats;
+    String color;
 }

@@ -19,13 +19,10 @@ public class AdminServiceImpl implements AdminService {
     public String add(AddBusRequest addBusRequest) {
         //Add bus data;
         Integer busId = adminRepo.addBus(addBusRequest.getBusName(),addBusRequest.getTotalSeats());
-
+        //Add routeId
         Integer routeId = adminRepo.addRoute(addBusRequest);
-
-
         // Add bus_routes;
         Integer busRouteId=adminRepo.addBusRoute(busId,routeId);
-
         //Handle Seat Availability
         List<WeekDays> weekDaysList = addBusRequest.getWeekDays();
         Integer[] weekDaysArray = new Integer[weekDaysList.size()];
@@ -33,14 +30,11 @@ public class AdminServiceImpl implements AdminService {
            adminRepo.addSeatAvailability(weekDay.index,
                     busRouteId, addBusRequest.getTotalSeats());
         }
-
         // Handle bus schedule
         for (WeekDays weekDay :addBusRequest.getWeekDays()) {
             Integer busScheduleId = adminRepo.addBusSchedule(busRouteId, weekDay.value);
         }
         return null;
-
-
     }
 
     @Override

@@ -2,7 +2,11 @@ package com.busManager.busmanager.repositories.implementations;
 
 import com.busManager.busmanager.data.request.AddBusRequest;
 import com.busManager.busmanager.data.request.UpdateBusRequest;
+import com.busManager.busmanager.exceptions.AddBusException;
+import com.busManager.busmanager.exceptions.UpdateBusException;
 import com.busManager.busmanager.repositories.AdminRepo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -38,80 +42,127 @@ public class AdminRepoImpl implements AdminRepo {
             "AND bus_routes.route_id = routes.route_id;";
     @Autowired
     JdbcTemplate jdbcTemplate;
+    private static Logger LOGGER = LoggerFactory.getLogger(AdminRepoImpl.class);
 
     @Override
     public Integer addBus(String busName, Integer totalSeats) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(ADD_BUS_SQL, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, busName);
-            ps.setInt(2, totalSeats);
-            return ps;
-        }, keyHolder);
-        return (Integer) Objects.requireNonNull(keyHolder.getKeys()).get("BUS_ID");
+        try {
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(ADD_BUS_SQL, Statement.RETURN_GENERATED_KEYS);
+                ps.setString(1, busName);
+                ps.setInt(2, totalSeats);
+                return ps;
+            }, keyHolder);
+            return (Integer) Objects.requireNonNull(keyHolder.getKeys()).get("BUS_ID");
+        } catch (Exception e) {
+            LOGGER.info(String.valueOf(e));
+            LOGGER.info("Bus Name: {}", busName);
+            LOGGER.info("Total seats: {}", totalSeats);
+            throw new AddBusException("Error while adding bus to the database");
+        }
     }
 
     @Override
     public Integer addRoute(AddBusRequest addBusRequest) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(ADD_ROUTE_SQL, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, addBusRequest.getSource());
-            ps.setString(2, addBusRequest.getDestination());
-            ps.setFloat(3, addBusRequest.getDistance());
-            ps.setTime(4, addBusRequest.getDepartureTime());
-            return ps;
-        }, keyHolder);
-        return (Integer) Objects.requireNonNull(keyHolder.getKeys()).get("ROUTE_ID");
+        try {
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(ADD_ROUTE_SQL, Statement.RETURN_GENERATED_KEYS);
+                ps.setString(1, addBusRequest.getSource());
+                ps.setString(2, addBusRequest.getDestination());
+                ps.setFloat(3, addBusRequest.getDistance());
+                ps.setTime(4, addBusRequest.getDepartureTime());
+                return ps;
+            }, keyHolder);
+            return (Integer) Objects.requireNonNull(keyHolder.getKeys()).get("ROUTE_ID");
+        } catch (Exception e) {
+            LOGGER.info(String.valueOf(e));
+            LOGGER.info("Add Bus Request: {}", addBusRequest);
+            throw new AddBusException("Error while adding route to the database");
+        }
+
     }
 
     @Override
     public Integer addBusRoute(Integer busId, Integer routeId) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(ADD_BUS_ROUTE_SQL, Statement.RETURN_GENERATED_KEYS);
-            ps.setInt(1, busId);
-            ps.setInt(2, routeId);
-            return ps;
-        }, keyHolder);
-        return (Integer) Objects.requireNonNull(keyHolder.getKeys()).get("BUS_ROUTE_ID");
+        try {
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(ADD_BUS_ROUTE_SQL, Statement.RETURN_GENERATED_KEYS);
+                ps.setInt(1, busId);
+                ps.setInt(2, routeId);
+                return ps;
+            }, keyHolder);
+            return (Integer) Objects.requireNonNull(keyHolder.getKeys()).get("BUS_ROUTE_ID");
+        } catch (Exception e) {
+            LOGGER.info(String.valueOf(e));
+            LOGGER.info("BusId: {}", busId);
+            LOGGER.info("RouteId {}", routeId);
+            throw new AddBusException("Error while adding bus route to the database");
+        }
     }
 
     @Override
     public void addSeatAvailability(Integer weekDay,
                                        Integer busRouteId, Integer totalNumberOfSeats) {
-        jdbcTemplate.execute(ADD_SEAT_AVAILABILITY, new PreparedStatementCallback<Void>() {
-            @Override
-            public Void doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-                ps.setInt(1, weekDay);
-                ps.setInt(2, busRouteId);
-                ps.setInt(3, totalNumberOfSeats);
-                ps.setInt(4, totalNumberOfSeats);
-                ps.execute();
-                return null;
-            }
-        });
+        try {
+            jdbcTemplate.execute(ADD_SEAT_AVAILABILITY, new PreparedStatementCallback<Void>() {
+                @Override
+                public Void doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
+                    ps.setInt(1, weekDay);
+                    ps.setInt(2, busRouteId);
+                    ps.setInt(3, totalNumberOfSeats);
+                    ps.setInt(4, totalNumberOfSeats);
+                    ps.execute();
+                    return null;
+                }
+            });
+        } catch (Exception e) {
+            LOGGER.error("Error while adding seat availability to the database. WeekDay: {}, BusRouteId: {}, TotalNumberOfSeats: {}", weekDay, busRouteId, totalNumberOfSeats);
+            LOGGER.error("Exception details: ", e);
+            throw new AddBusException("Error while adding seat availability to the database");
+        }
     }
 
     @Override
     public Integer addBusSchedule(Integer busRoutedId, String weekDay) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(ADD_BUS_SCHEDULE_SQL, Statement.RETURN_GENERATED_KEYS);
-            ps.setInt(1, busRoutedId);
-            ps.setString(2, weekDay);
-            return ps;
-        }, keyHolder);
-        return (Integer) Objects.requireNonNull(keyHolder.getKeys()).get("SCHEDULE_ID");
+        try {
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(ADD_BUS_SCHEDULE_SQL, Statement.RETURN_GENERATED_KEYS);
+                ps.setInt(1, busRoutedId);
+                ps.setString(2, weekDay);
+                return ps;
+            }, keyHolder);
+            return (Integer) Objects.requireNonNull(keyHolder.getKeys()).get("SCHEDULE_ID");
+        } catch (Exception e) {
+            LOGGER.error("Error while adding bus schedule to the database. BusRouteId: {}, WeekDay: {}", busRoutedId, weekDay);
+            LOGGER.error("Exception details: ", e);
+            throw new AddBusException("Error while adding bus schedule to the database");
+        }
     }
 
     @Override
     public boolean deleteBus(String busId) {
-        return jdbcTemplate.update(DELETE_BUS_SQL, busId) > 0;
+        try {
+            return jdbcTemplate.update(DELETE_BUS_SQL, busId) > 0;
+        } catch (Exception e) {
+            LOGGER.error("Error while deleting bus with ID {}: {}", busId, e.getMessage());
+            throw new UpdateBusException("Error while deleting bus");
+        }
+
     }
     @Override
     public boolean updateBus(UpdateBusRequest updateBusRequest) {
-        return jdbcTemplate.update(UPDATE_BUS_TIME_SQL,
-                updateBusRequest.getNewDepartureTime(), updateBusRequest.getBusName()) > 0;
+        try {
+            return jdbcTemplate.update(UPDATE_BUS_TIME_SQL,
+                    updateBusRequest.getNewDepartureTime(), updateBusRequest.getBusName()) > 0;
+        } catch (Exception e) {
+            LOGGER.error("Error while updating bus information for bus with name {}: {}",
+                    updateBusRequest.getBusName(), e.getMessage());
+            throw new UpdateBusException("Error while updating bus information");
+        }
+
     }
 }

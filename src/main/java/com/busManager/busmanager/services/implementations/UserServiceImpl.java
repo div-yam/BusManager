@@ -25,18 +25,13 @@ public class UserServiceImpl implements UserService {
         //make request for repo
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(searchRequest.getDate());
-
         // Get the day of the week as an integer (1 = Sunday, 2 = Monday, ..., 7 = Saturday)
         int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-
         // Convert the integer to a day name
         String[] daysOfWeek = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
         String weekday = daysOfWeek[dayOfWeek - 1];
-
-
         List<BusSearchResponse> busSearchResponses = userRepo.getBuses(searchRequest.getSource(), searchRequest.getDestination(), weekday);
         return new SearchResponse(busSearchResponses);
-
     }
     @Override
     public CheckEligibilityResponse checkEligibility(CheckEligibilityRequest checkEligibilityRequest) {
@@ -50,7 +45,7 @@ public class UserServiceImpl implements UserService {
     public HoldResponse hold(HoldRequest holdRequest) {
         HoldResponse holdResponse= new HoldResponse();
 
-        //check-elegibility
+        //check-eligibility
         CheckEligibilityRequest checkEligibilityRequest=new CheckEligibilityRequest();
         checkEligibilityRequest.setBusRouteId(holdRequest.getBusRouteId());
         checkEligibilityRequest.setDepartureDate(holdRequest.getDepartureDate());
